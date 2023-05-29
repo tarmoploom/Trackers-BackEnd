@@ -10,5 +10,4 @@ namespace TrackerApplication.Model {
         public string shippingAgentCode { get; init; } = "";
         public string shippingWebAddress { get; init; } = "";
     }
-
 }
