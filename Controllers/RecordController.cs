@@ -7,7 +7,6 @@ using System.Text;
 namespace TrackerApplication.Controllers {
 
     //[Authorize(Roles = UserRoles.Admin + "," + UserRoles.Owner)]
-    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RecordController : ControllerBase {
@@ -25,7 +24,7 @@ namespace TrackerApplication.Controllers {
             string uri = $"https://itb2204.bc365.eu:7048/bc/api/trackers/tracking/v2.0/companies({compid})/salesOrders({id})/?tenant={tenant}";
 
             var users = _context.Users!.AsQueryable();
-            var user = users.FirstOrDefault(x => x.Tenant == tenant);
+            var user = users.FirstOrDefault(x => x.Tenant == tenant.ToLower());
             if (user?.Tenant == null) return NotFound($"User not found: {tenant}");
 
             using (var client = new HttpClient()) {

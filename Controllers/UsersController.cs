@@ -33,17 +33,21 @@ namespace TrackerApplication.Controllers {
         public IActionResult PostPut([FromBody] User user) {
             var dbUser = _context.Users!.First();
             if (dbUser.Hash != user.Hash) return BadRequest("Authentication failed");
-            if (dbUser.Tenant.ToLower() == user.Tenant.ToLower() && dbUser.Username.ToLower() == user.Username.ToLower()) return BadRequest("Not allowed");
+            if (dbUser.Tenant == user.Tenant.ToLower() && dbUser.Username == user.Username.ToLower()) return BadRequest("Not allowed");
             if (user.Tenant == "" || user.Username == "" || user.Company == "" || user.Key == "") return BadRequest("Empty fields not allowed");
 
-            var query = _context.Users!.AsQueryable().Where(x => x.Tenant.ToLower() == user.Tenant.ToLower());
-            query = query.Where(x => x.Username.ToLower() == user.Username.ToLower());
-            query = query.Where(x => x.Company.ToLower() == user.Company.ToLower());
+            var query = _context.Users!.AsQueryable().Where(x => x.Tenant == user.Tenant.ToLower());
+            query = query.Where(x => x.Username == user.Username.ToLower());
+            query = query.Where(x => x.Company == user.Company.ToLower());
 
             // Post
             dbUser = query.FirstOrDefault();
             if (dbUser == null) {
+                user.Tenant = user.Tenant.ToLower();
+                user.Username = user.Username.ToLower();
+                user.Company = user.Company.ToLower();
                 user.Hash = "";
+
                 _context.Users.Add(user);
                 _context.SaveChanges();
                 return Ok("User Added");
