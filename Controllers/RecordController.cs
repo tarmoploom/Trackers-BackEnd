@@ -20,16 +20,15 @@ namespace TrackerApplication.Controllers {
 
         [HttpGet]
         public async Task<IActionResult> Get(string? compid, string? tenant, string? id) {
+            if (compid == null || tenant == null || id == null) return Conflict("parameters missing");
 
             string uri = $"https://itb2204.bc365.eu:7048/bc/api/trackers/tracking/v2.0/companies({compid})/salesOrders({id})/?tenant={tenant}";
 
+            var users = _context.Users!.AsQueryable();
+            var user = users.FirstOrDefault(x => x.Tenant == tenant);
+            if (user?.Tenant == null) return NotFound($"User not found: {tenant}");
+
             using (var client = new HttpClient()) {
-
-                var users = _context.Users!.AsQueryable();
-                var user = users.FirstOrDefault(x => x.Tenant == tenant);
-
-                if (user?.Tenant == null) return NotFound($"User not found: {tenant}");
-
                 var byteArray = Encoding.ASCII.GetBytes($"{user.Username}:{user.Key}");
                 var header = new AuthenticationHeaderValue(
                        "Basic", Convert.ToBase64String(byteArray));

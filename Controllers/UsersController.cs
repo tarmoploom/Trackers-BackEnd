@@ -31,12 +31,12 @@ namespace TrackerApplication.Controllers {
 
         [HttpPost]
         public IActionResult PostPut([FromBody] User user) {
-            var dbUser = _context.Users!.FirstOrDefault()!;
+            var dbUser = _context.Users!.First();
             if (dbUser.Hash != user.Hash) return BadRequest("Authentication failed");
             if (dbUser.Tenant.ToLower() == user.Tenant.ToLower() && dbUser.Username.ToLower() == user.Username.ToLower()) return BadRequest("Not allowed");
             if (user.Tenant == "" || user.Username == "" || user.Company == "" || user.Key == "") return BadRequest("Empty fields not allowed");
 
-            var query = _context.Users!.AsQueryable()!.Where(x => x.Tenant.ToLower() == user.Tenant.ToLower());
+            var query = _context.Users!.AsQueryable().Where(x => x.Tenant.ToLower() == user.Tenant.ToLower());
             query = query.Where(x => x.Username.ToLower() == user.Username.ToLower());
             query = query.Where(x => x.Company.ToLower() == user.Company.ToLower());
 
@@ -49,7 +49,7 @@ namespace TrackerApplication.Controllers {
                 return Ok("User Added");
             }
 
-            if (dbUser.Key.ToLower() == user.Key.ToLower()) return Conflict("Key already present");
+            if (dbUser.Key == user.Key) return Conflict("Key already present");
 
             // Update
             dbUser.Key = user.Key;
