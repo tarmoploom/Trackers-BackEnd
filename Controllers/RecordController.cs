@@ -25,7 +25,7 @@ namespace TrackerApplication.Controllers {
 
             var users = _context.Users!.AsQueryable();
             var user = users.FirstOrDefault(x => x.Tenant == tenant.ToLower());
-            if (user?.Tenant == null) return NotFound($"User not found: {tenant}");
+            if (user == null) return NotFound($"User not found: {tenant}");
 
             using (var client = new HttpClient()) {
                 var byteArray = Encoding.ASCII.GetBytes($"{user.Username}:{user.Key}");
